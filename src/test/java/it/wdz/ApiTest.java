@@ -1,9 +1,14 @@
 package it.wdz;
 
-import java.util.HashMap;
+import java.util.Map;
 
+import it.wdz.dao.ISchoolDao;
 import it.wdz.dao.IUserDao;
 import it.wdz.mybatis.binding.MapperProxyFactory;
+import it.wdz.mybatis.binding.MapperRegistry;
+import it.wdz.mybatis.session.SqlSession;
+import it.wdz.mybatis.session.defaults.DefaultSqlSessionFactory;
+import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,14 +25,22 @@ public class ApiTest {
     private Logger logger = LoggerFactory.getLogger(ApiTest.class);
 
     @Test
-    public void test_MapperProxyFactory(){
-        MapperProxyFactory<IUserDao> mapperProxyFactory = new MapperProxyFactory<>(IUserDao.class);
-        HashMap<String, String> sqlSessions = new HashMap<>();
-        sqlSessions.put("it.wdz.dao.IUserDao.queryUserName","执行queryUserName方法 name: keendy");
-        sqlSessions.put("it.wdz.dao.IUserDao.queryUserAge","执行queryUserAge方法 age: 12");
-        IUserDao userDao = mapperProxyFactory.newInstance(sqlSessions);
-        String userName = userDao.queryUserName("11");
-        System.out.println(userName);
+    public void test(){
+        // 1. 注册 Mapper
+        MapperRegistry mapperRegistry = new MapperRegistry();
+        mapperRegistry.addMappers("it.wdz.dao");
+
+        // 2. 从 SqlSession 工厂获取 Session
+        DefaultSqlSessionFactory defaultSqlSessionFactory = new DefaultSqlSessionFactory(mapperRegistry);
+        SqlSession sqlSession = defaultSqlSessionFactory.openSession();
+
+        // 3. 获取映射器对象
+        IUserDao userDao = sqlSession.getMapper(IUserDao.class);
+        ISchoolDao schoolDao = sqlSession.getMapper(ISchoolDao.class);
+
+        // 4. 测试验证
+        logger.info("userDao.queryUserName: " + userDao.queryUserName("10").toString());
+        logger.info("schoolDao.querySchoolName: " + schoolDao.querySchoolName("22"));
     }
 
 }
