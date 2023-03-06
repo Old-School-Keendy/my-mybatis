@@ -6,6 +6,7 @@ package it.wdz.mybatis.session;
  * @description
  */
 public interface SqlSession {
+
     /**
      * Retrieve a single row mapped from the statement key
      * 根据指定的SqlID获取一条记录的封装对象
@@ -27,6 +28,13 @@ public interface SqlSession {
      * @return Mapped object
      */
     <T> T selectOne(String statement, Object parameter);
+
+    /**
+     * Retrieves current configuration
+     * 得到配置
+     * @return Configuration
+     */
+    Configuration getConfiguration();
 
     /**
      * Retrieves a mapper.

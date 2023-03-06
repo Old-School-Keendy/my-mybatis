@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import cn.hutool.core.lang.ClassScanner;
+import it.wdz.mybatis.session.Configuration;
 import it.wdz.mybatis.session.SqlSession;
 
 /**
@@ -13,6 +14,8 @@ import it.wdz.mybatis.session.SqlSession;
  * @description
  */
 public class MapperRegistry {
+
+    private Configuration config;
     /**
      * 将已添加的映射器代理加入到 HashMap
      */
@@ -57,4 +60,10 @@ public class MapperRegistry {
         return knownMappers.containsKey(type);
     }
 
+    public MapperRegistry() {
+    }
+
+    public MapperRegistry(Configuration config) {
+        this.config = config;
+    }
 }
