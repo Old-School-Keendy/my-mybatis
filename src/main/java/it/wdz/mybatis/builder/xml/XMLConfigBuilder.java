@@ -5,15 +5,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import it.wdz.mybatis.binding.MapperRegistry;
+import javax.sql.DataSource;
+
 import it.wdz.mybatis.builder.BaseBuilder;
+import it.wdz.mybatis.datasource.DataSourceFactory;
 import it.wdz.mybatis.io.Resources;
+import it.wdz.mybatis.mapping.BoundSql;
+import it.wdz.mybatis.mapping.Environment;
 import it.wdz.mybatis.mapping.MappedStatement;
 import it.wdz.mybatis.mapping.SqlCommandType;
 import it.wdz.mybatis.session.Configuration;
+import it.wdz.mybatis.transaction.TransactionFactory;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -26,29 +32,83 @@ import org.xml.sax.InputSource;
  * @description
  */
 public class XMLConfigBuilder extends BaseBuilder {
+
     private Element root;
 
     public XMLConfigBuilder(Reader reader) {
         // 1. 调用父类初始化Configuration
         super(new Configuration());
-        // 2. dom4j处理xml
+        // 2. dom4j 处理 xml
         SAXReader saxReader = new SAXReader();
         try {
-            Document document = saxReader.read(reader);
+            Document document = saxReader.read(new InputSource(reader));
             root = document.getRootElement();
         } catch (DocumentException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * 解析配置；类型别名、插件、对象工厂、对象包装工厂、设置、环境、类型转换、映射器
+     *
+     * @return Configuration
+     */
     public Configuration parse() {
-        // 解析映射器
         try {
+            // 环境
+            environmentsElement(root.element("environments"));
+            // 解析映射器
             mapperElement(root.element("mappers"));
         } catch (Exception e) {
             throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
         }
         return configuration;
+    }
+
+    /**
+     * <environments default="development">
+     * <environment id="development">
+     * <transactionManager type="JDBC">
+     * <property name="..." value="..."/>
+     * </transactionManager>
+     * <dataSource type="POOLED">
+     * <property name="driver" value="${driver}"/>
+     * <property name="url" value="${url}"/>
+     * <property name="username" value="${username}"/>
+     * <property name="password" value="${password}"/>
+     * </dataSource>
+     * </environment>
+     * </environments>
+     */
+    private void environmentsElement(Element context) throws Exception {
+        String environment = context.attributeValue("default");
+
+        List<Element> environmentList = context.elements("environment");
+        for (Element e : environmentList) {
+            String id = e.attributeValue("id");
+            if (environment.equals(id)) {
+                // 事务管理器
+                TransactionFactory txFactory = (TransactionFactory) typeAliasRegistry.resolveAlias(e.element("transactionManager").attributeValue("type")).newInstance();
+
+                // 数据源
+                Element dataSourceElement = e.element("dataSource");
+                DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(dataSourceElement.attributeValue("type")).newInstance();
+                List<Element> propertyList = dataSourceElement.elements("property");
+                Properties props = new Properties();
+                for (Element property : propertyList) {
+                    props.setProperty(property.attributeValue("name"), property.attributeValue("value"));
+                }
+                dataSourceFactory.setProperties(props);
+                DataSource dataSource = dataSourceFactory.getDataSource();
+
+                // 构建环境
+                Environment.Builder environmentBuilder = new Environment.Builder(id)
+                    .transactionFactory(txFactory)
+                    .dataSource(dataSource);
+
+                configuration.setEnvironment(environmentBuilder.build());
+            }
+        }
     }
 
     private void mapperElement(Element mappers) throws Exception {
@@ -72,8 +132,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
                 // ? 匹配
                 Map<Integer, String> parameter = new HashMap<>();
-                String regex = "(#\\{(.*?)})";
-                Pattern pattern = Pattern.compile(regex);
+                Pattern pattern = Pattern.compile("(#\\{(.*?)})");
                 Matcher matcher = pattern.matcher(sql);
                 for (int i = 1; matcher.find(); i++) {
                     String g1 = matcher.group(1);
@@ -85,8 +144,10 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = namespace + "." + id;
                 String nodeName = node.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(nodeName.toUpperCase(Locale.ENGLISH));
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,
-                    parameterType, resultType, sql, parameter).build();
+
+                BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
+
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType, boundSql).build();
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }
@@ -95,5 +156,6 @@ public class XMLConfigBuilder extends BaseBuilder {
             configuration.addMapper(Resources.classForName(namespace));
         }
     }
+
 }
 

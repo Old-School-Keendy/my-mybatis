@@ -13,6 +13,7 @@ import it.wdz.mybatis.session.SqlSession;
  * @description
  */
 public class MapperMethod {
+
     private final SqlCommand command;
 
     public MapperMethod(Class<?> mapperInterface, Method method, Configuration configuration) {
@@ -29,7 +30,7 @@ public class MapperMethod {
             case UPDATE:
                 break;
             case SELECT:
-                result = sqlSession.selectOne(command.getName(), args[0]);
+                result = sqlSession.selectOne(command.getName(), args);
                 break;
             default:
                 throw new RuntimeException("Unknown execution method for: " + command.getName());
@@ -60,5 +61,6 @@ public class MapperMethod {
             return type;
         }
     }
+
 
 }
