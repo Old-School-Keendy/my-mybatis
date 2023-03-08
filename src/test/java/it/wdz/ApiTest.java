@@ -31,10 +31,12 @@ import org.slf4j.LoggerFactory;
 public class ApiTest {
 
     private Logger logger = LoggerFactory.getLogger(ApiTest.class);
+
     @Test
     public void test_SqlSessionFactory() throws IOException {
         // 1. 从SqlSessionFactory中获取SqlSession
-        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResourceAsReader("mybatis-config-datasource.xml"));
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(
+            Resources.getResourceAsReader("mybatis-config-datasource.xml"));
         SqlSession sqlSession = sqlSessionFactory.openSession();
 
         // 2. 获取映射器对象
@@ -46,6 +48,7 @@ public class ApiTest {
             logger.info("测试结果：{}", JSON.toJSONString(user));
         }
     }
+
     @Test
     public void test_pooled() throws SQLException, InterruptedException {
         PooledDataSource pooledDataSource = new PooledDataSource();

@@ -3,7 +3,6 @@ package it.wdz.mybatis.datasource.pooled;
 import java.util.ArrayList;
 import java.util.List;
 
-
 /**
  * @author wangdezhao
  * @date 2023/3/8
@@ -61,7 +60,8 @@ public class PoolState {
     }
 
     public synchronized long getAverageOverdueCheckoutTime() {
-        return claimedOverdueConnectionCount == 0 ? 0 : accumulatedCheckoutTimeOfOverdueConnections / claimedOverdueConnectionCount;
+        return claimedOverdueConnectionCount == 0 ? 0
+            : accumulatedCheckoutTimeOfOverdueConnections / claimedOverdueConnectionCount;
     }
 
     public synchronized long getAverageCheckoutTime() {

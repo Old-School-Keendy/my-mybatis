@@ -27,7 +27,7 @@ public class Resources {
     }
 
     private static ClassLoader[] getClassLoaders() {
-        return new ClassLoader[]{
+        return new ClassLoader[] {
             ClassLoader.getSystemClassLoader(),
             Thread.currentThread().getContextClassLoader()};
     }

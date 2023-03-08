@@ -6,7 +6,6 @@ import java.lang.reflect.Proxy;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-
 /**
  * @author wangdezhao
  * @date 2023/3/8
@@ -15,7 +14,7 @@ import java.sql.SQLException;
 public class PooledConnection implements InvocationHandler {
 
     private static final String CLOSE = "close";
-    private static final Class<?>[] IFACES = new Class<?>[]{Connection.class};
+    private static final Class<?>[] IFACES = new Class<?>[] {Connection.class};
 
     private int hashCode = 0;
     private PooledDataSource dataSource;
@@ -38,9 +37,8 @@ public class PooledConnection implements InvocationHandler {
         this.createdTimestamp = System.currentTimeMillis();
         this.lastUsedTimestamp = System.currentTimeMillis();
         this.valid = true;
-        this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
+        this.proxyConnection = (Connection)Proxy.newProxyInstance(Connection.class.getClassLoader(), IFACES, this);
     }
-
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -58,7 +56,6 @@ public class PooledConnection implements InvocationHandler {
             return method.invoke(realConnection, args);
         }
     }
-
 
     private void checkConnection() throws SQLException {
         if (!valid) {
@@ -138,7 +135,7 @@ public class PooledConnection implements InvocationHandler {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof PooledConnection) {
-            return realConnection.hashCode() == (((PooledConnection) obj).realConnection.hashCode());
+            return realConnection.hashCode() == (((PooledConnection)obj).realConnection.hashCode());
         } else if (obj instanceof Connection) {
             return hashCode == obj.hashCode();
         } else {

@@ -7,8 +7,7 @@ import java.util.Map;
 /**
  * @author wangdezhao
  * @date 2023/3/7
- * @description
- * 在 TypeAliasRegistry 类型别名注册器中先做了一些基本的类型注册，以及提供 registerAlias 注册方法和 resolveAlias 获取方法。
+ * @description 在 TypeAliasRegistry 类型别名注册器中先做了一些基本的类型注册，以及提供 registerAlias 注册方法和 resolveAlias 获取方法。
  */
 public class TypeAliasRegistry {
     private final Map<String, Class<?>> TYPE_ALIASES = new HashMap<>();
@@ -35,7 +34,7 @@ public class TypeAliasRegistry {
 
     public <T> Class<T> resolveAlias(String string) {
         String key = string.toLowerCase(Locale.ENGLISH);
-        return (Class<T>) TYPE_ALIASES.get(key);
+        return (Class<T>)TYPE_ALIASES.get(key);
     }
 
 }

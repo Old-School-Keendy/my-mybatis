@@ -31,7 +31,6 @@ public class Configuration {
      */
     protected final Map<String, MappedStatement> mappedStatements = new HashMap<>();
 
-
     // 类型别名注册机
     protected final TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
 
@@ -42,7 +41,6 @@ public class Configuration {
         typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
         typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     }
-
 
     public void addMappers(String packageName) {
         mapperRegistry.addMappers(packageName);

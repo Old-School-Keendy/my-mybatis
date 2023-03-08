@@ -31,7 +31,7 @@ public class DefaultSqlSession implements SqlSession {
 
     @Override
     public <T> T selectOne(String statement) {
-        return (T) ("你被代理了！" + statement);
+        return (T)("你被代理了！" + statement);
     }
 
     @Override
@@ -44,7 +44,7 @@ public class DefaultSqlSession implements SqlSession {
 
             BoundSql boundSql = mappedStatement.getBoundSql();
             PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
-            preparedStatement.setLong(1, Long.parseLong(((Object[]) parameter)[0].toString()));
+            preparedStatement.setLong(1, Long.parseLong(((Object[])parameter)[0].toString()));
             ResultSet resultSet = preparedStatement.executeQuery();
 
             List<T> objList = resultSet2Obj(resultSet, Class.forName(boundSql.getResultType()));
@@ -62,7 +62,7 @@ public class DefaultSqlSession implements SqlSession {
             int columnCount = metaData.getColumnCount();
             // 每次遍历行值
             while (resultSet.next()) {
-                T obj = (T) clazz.newInstance();
+                T obj = (T)clazz.newInstance();
                 for (int i = 1; i <= columnCount; i++) {
                     Object value = resultSet.getObject(i);
                     String columnName = metaData.getColumnName(i);

@@ -57,7 +57,8 @@ public class PooledDataSource implements DataSource {
             // 判断链接是否有效
             if (connection.isValid()) {
                 // 如果空闲链接小于设定数量，也就是太少时
-                if (state.idleConnections.size() < poolMaximumIdleConnections && connection.getConnectionTypeCode() == expectedConnectionTypeCode) {
+                if (state.idleConnections.size() < poolMaximumIdleConnections
+                    && connection.getConnectionTypeCode() == expectedConnectionTypeCode) {
                     state.accumulatedCheckoutTime += connection.getCheckoutTime();
                     // 它首先检查数据库连接是否处于自动提交模式，如果不是，则调用rollback()方法执行回滚操作。
                     // 在MyBatis中，如果没有开启自动提交模式，则需要手动提交或回滚事务。因此，这段代码可能是在确保操作完成后，如果没有开启自动提交模式，则执行回滚操作。
@@ -88,7 +89,8 @@ public class PooledDataSource implements DataSource {
                     connection.invalidate();
                 }
             } else {
-                logger.info("A bad connection (" + connection.getRealHashCode() + ") attempted to return to the pool, discarding connection.");
+                logger.info("A bad connection (" + connection.getRealHashCode()
+                    + ") attempted to return to the pool, discarding connection.");
                 state.badConnectionCount++;
             }
         }
@@ -165,7 +167,8 @@ public class PooledDataSource implements DataSource {
                         state.requestCount++;
                         state.accumulatedRequestTime += System.currentTimeMillis() - t;
                     } else {
-                        logger.info("A bad connection (" + conn.getRealHashCode() + ") was returned from the pool, getting another connection.");
+                        logger.info("A bad connection (" + conn.getRealHashCode()
+                            + ") was returned from the pool, getting another connection.");
                         // 如果没拿到，统计信息：失败链接 +1
                         state.badConnectionCount++;
                         localBadConnectionCount++;
@@ -173,7 +176,8 @@ public class PooledDataSource implements DataSource {
                         // 失败次数较多，抛异常
                         if (localBadConnectionCount > (poolMaximumIdleConnections + 3)) {
                             logger.debug("PooledDataSource: Could not get a good connection to the database.");
-                            throw new SQLException("PooledDataSource: Could not get a good connection to the database.");
+                            throw new SQLException(
+                                "PooledDataSource: Could not get a good connection to the database.");
                         }
                     }
                 }
@@ -181,8 +185,10 @@ public class PooledDataSource implements DataSource {
         }
 
         if (conn == null) {
-            logger.debug("PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.");
-            throw new SQLException("PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.");
+            logger.debug(
+                "PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.");
+            throw new SQLException(
+                "PooledDataSource: Unknown severe error condition.  The connection pool returned a null connection.");
         }
 
         return conn;
@@ -190,7 +196,8 @@ public class PooledDataSource implements DataSource {
 
     public void forceCloseAll() {
         synchronized (state) {
-            expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(), dataSource.getPassword());
+            expectedConnectionTypeCode = assembleConnectionTypeCode(dataSource.getUrl(), dataSource.getUsername(),
+                dataSource.getPassword());
             // 关闭活跃链接
             for (int i = state.activeConnections.size(); i > 0; i--) {
                 try {
@@ -236,7 +243,8 @@ public class PooledDataSource implements DataSource {
 
         if (result) {
             if (poolPingEnabled) {
-                if (poolPingConnectionsNotUsedFor >= 0 && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
+                if (poolPingConnectionsNotUsedFor >= 0
+                    && conn.getTimeElapsedSinceLastUse() > poolPingConnectionsNotUsedFor) {
                     try {
                         logger.info("Testing connection " + conn.getRealHashCode() + " ...");
                         Connection realConn = conn.getRealConnection();
@@ -268,7 +276,7 @@ public class PooledDataSource implements DataSource {
         if (Proxy.isProxyClass(conn.getClass())) {
             InvocationHandler handler = Proxy.getInvocationHandler(conn);
             if (handler instanceof PooledConnection) {
-                return ((PooledConnection) handler).getRealConnection();
+                return ((PooledConnection)handler).getRealConnection();
             }
         }
         return conn;
@@ -348,7 +356,6 @@ public class PooledDataSource implements DataSource {
         dataSource.setPassword(password);
         forceCloseAll();
     }
-
 
     public void setDefaultAutoCommit(boolean defaultAutoCommit) {
         dataSource.setAutoCommit(defaultAutoCommit);

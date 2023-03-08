@@ -19,7 +19,7 @@ public class JdbcTransaction implements Transaction {
     protected TransactionIsolationLevel level = TransactionIsolationLevel.NONE;
     protected boolean autoCommit;
 
-    public JdbcTransaction( DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
+    public JdbcTransaction(DataSource dataSource, TransactionIsolationLevel level, boolean autoCommit) {
         this.dataSource = dataSource;
         this.level = level;
         this.autoCommit = autoCommit;

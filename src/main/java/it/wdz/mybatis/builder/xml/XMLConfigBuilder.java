@@ -88,11 +88,13 @@ public class XMLConfigBuilder extends BaseBuilder {
             String id = e.attributeValue("id");
             if (environment.equals(id)) {
                 // 事务管理器
-                TransactionFactory txFactory = (TransactionFactory) typeAliasRegistry.resolveAlias(e.element("transactionManager").attributeValue("type")).newInstance();
+                TransactionFactory txFactory = (TransactionFactory)typeAliasRegistry.resolveAlias(
+                    e.element("transactionManager").attributeValue("type")).newInstance();
 
                 // 数据源
                 Element dataSourceElement = e.element("dataSource");
-                DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(dataSourceElement.attributeValue("type")).newInstance();
+                DataSourceFactory dataSourceFactory = (DataSourceFactory)typeAliasRegistry.resolveAlias(
+                    dataSourceElement.attributeValue("type")).newInstance();
                 List<Element> propertyList = dataSourceElement.elements("property");
                 Properties props = new Properties();
                 for (Element property : propertyList) {
@@ -147,7 +149,8 @@ public class XMLConfigBuilder extends BaseBuilder {
 
                 BoundSql boundSql = new BoundSql(sql, parameter, parameterType, resultType);
 
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType, boundSql).build();
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,
+                    boundSql).build();
                 // 添加解析 SQL
                 configuration.addMappedStatement(mappedStatement);
             }
