@@ -5,6 +5,8 @@ import java.util.Map;
 
 import it.wdz.mybatis.binding.MapperRegistry;
 import it.wdz.mybatis.datasource.druid.DruidDataSourceFactory;
+import it.wdz.mybatis.datasource.pooled.PooledDataSourceFactory;
+import it.wdz.mybatis.datasource.unpooled.UnpooledDataSourceFactory;
 import it.wdz.mybatis.mapping.Environment;
 import it.wdz.mybatis.mapping.MappedStatement;
 import it.wdz.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -35,7 +37,10 @@ public class Configuration {
 
     public Configuration() {
         typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
+
         typeAliasRegistry.registerAlias("DRUID", DruidDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("UNPOOLED", UnpooledDataSourceFactory.class);
+        typeAliasRegistry.registerAlias("POOLED", PooledDataSourceFactory.class);
     }
 
 

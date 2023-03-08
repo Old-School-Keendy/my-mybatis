@@ -2,12 +2,12 @@ package it.wdz.mybatis.session.defaults;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import it.wdz.mybatis.mapping.BoundSql;

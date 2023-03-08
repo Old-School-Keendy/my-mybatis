@@ -5,7 +5,7 @@
 <mapper namespace="it.wdz.dao.IUserDao">
 
     <select id="queryUserInfoById" parameterType="java.lang.Long" resultType="it.wdz.po.User">
-        SELECT id, userId, userHead
+        SELECT id, userId, userHead, createTime
         FROM user
         where id = #{id}
     </select>
